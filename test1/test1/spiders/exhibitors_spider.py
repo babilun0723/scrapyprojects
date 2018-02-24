@@ -11,7 +11,7 @@ class ExhibitorSpider(scrapy.Spider):
 
     def start_requests(self):
         
-        for i in range(0,20*2,20):
+        for i in range(0,20*136,20):
             starturl='%s/IEM/Exhibitor-search/index.php?fw_goto=aussteller/blaettern&&start=%s&paginatevalues={"stichwort":""}' % (self.rooturl, i)
             
             yield scrapy.Request(url=starturl, callback=self.parse)
