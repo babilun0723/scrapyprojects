@@ -1,7 +1,7 @@
 import scrapy
 from HTMLParser import HTMLParser
 import uuid
-import pdfkit
+import urllib
 
 
 class ExhibitorSpider(scrapy.Spider):
@@ -11,7 +11,7 @@ class ExhibitorSpider(scrapy.Spider):
 
     def start_requests(self):
         
-        for i in range(0,20*136,20):
+        for i in range(0,20*2,20):
             starturl='%s/IEM/Exhibitor-search/index.php?fw_goto=aussteller/blaettern&&start=%s&paginatevalues={"stichwort":""}' % (self.rooturl, i)
             
             yield scrapy.Request(url=starturl, callback=self.parse)
@@ -32,18 +32,27 @@ class ExhibitorSpider(scrapy.Spider):
                 randomuid = str(uuid.uuid1())
                 title = "notitle_%s" % randomuid
             
-            pdfkit.from_url("%s%s" % (self.rooturl, href), '%s.pdf' % title)
+            href = self.h.unescape(href)
+            href = '%s%s' % (self.rooturl, href)
+            result = urllib.urlopen(href)
+            resulthtml = result.read()
+            filename = '%s.html' % title 
+            with open(filename, 'wb') as f:
+                f.write(resulthtml)
+                self.log('Saved file %s' % filename)
+
+            #pdfkit.from_url("%s%s" % (self.rooturl, href), '%s.pdf' % title)
 
             #request = scrapy.Request("%s%s" % (self.rooturl, href), callback=self.parse_exhibitor)
             #request.meta["title"] = title
             #yield request
 
-    def parse_exhibitor(self, response):
+    #def parse_exhibitor(self, response):
 
-        title = response.meta["title"]
+        #title = response.meta["title"]
         #maincontent = response.xpath('//div[re:test(@class,"maincontent")]').extract_first()
 
-        filename = title + ".html"
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-            self.log('Saved file %s' % filename)
+        #filename = title + ".html"
+        #with open(filename, 'wb') as f:
+            #f.write(response.body)
+            #self.log('Saved file %s' % filename)
