@@ -45,5 +45,5 @@ class ExhibSpider(scrapy.Spider):
         html = response.xpath('//div[@class="maincontent"][1]').extract_first()
         
         with io.open(filename, 'wb') as f:
-            f.write(str(html)
+            f.write(str(html))
             self.log('Saved file %s' % filename)
