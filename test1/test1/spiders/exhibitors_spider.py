@@ -34,25 +34,22 @@ class ExhibitorSpider(scrapy.Spider):
             
             href = self.h.unescape(href)
             href = '%s%s' % (self.rooturl, href)
-            result = urllib.urlopen(href)
-            resulthtml = result.read()
-            filename = '%s.html' % title 
-            with open(filename, 'wb') as f:
-                f.write(resulthtml)
-                self.log('Saved file %s' % filename)
+            #result = urllib.urlopen(href)
+            #resulthtml = result.read()
+            #filename = '%s.html' % title 
+            #with open(filename, 'wb') as f:
+            #    f.write(resulthtml)
+            #    self.log('Saved file %s' % filename)
 
             #pdfkit.from_url("%s%s" % (self.rooturl, href), '%s.pdf' % title)
 
-            #request = scrapy.Request("%s%s" % (self.rooturl, href), callback=self.parse_exhibitor)
-            #request.meta["title"] = title
-            #yield request
+            request = scrapy.Request(href, callback=self.parse_exhibitor)
+            request.meta["title"] = title
+            yield request
 
-    #def parse_exhibitor(self, response):
-
-        #title = response.meta["title"]
-        #maincontent = response.xpath('//div[re:test(@class,"maincontent")]').extract_first()
-
-        #filename = title + ".html"
-        #with open(filename, 'wb') as f:
-            #f.write(response.body)
-            #self.log('Saved file %s' % filename)
+    def parse_exhibitor(self, response):
+        title = response.meta["title"]
+        filename = '%s.html' % title
+        with open(filename, 'wb') as f:
+            f.write(response.body)
+            self.log('Saved file %s' % filename)
