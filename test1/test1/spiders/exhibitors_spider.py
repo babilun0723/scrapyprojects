@@ -2,16 +2,21 @@ import scrapy
 from HTMLParser import HTMLParser
 import uuid
 import urllib
+import io
+import sys
+
 
 
 class ExhibitorSpider(scrapy.Spider):
     name="exhibitors"
     rooturl='http://www.eisenwarenmesse.com'
     h = HTMLParser()
-
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+    
     def start_requests(self):
         
-        for i in range(0,20*136,20):
+        for i in range(0,20*2,20):
             starturl='%s/IEM/Exhibitor-search/index.php?fw_goto=aussteller/blaettern&&start=%s&paginatevalues={"stichwort":""}' % (self.rooturl, i)
             
             yield scrapy.Request(url=starturl, callback=self.parse)
@@ -49,7 +54,10 @@ class ExhibitorSpider(scrapy.Spider):
 
     def parse_exhibitor(self, response):
         title = response.meta["title"]
-        filename = '%s.html' % title
-        with open(filename, 'wb') as f:
-            f.write(response.body)
+        filename = 'htmlpages/%s.html' % title.replace("/"," ")
+
+        html = response.xpath('//div[re:test(@class, "platzFuerCross")]').extract_first()
+        
+        with io.open(filename, 'wb') as f:
+            f.write(html)
             self.log('Saved file %s' % filename)
