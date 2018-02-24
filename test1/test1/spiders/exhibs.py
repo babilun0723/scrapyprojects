@@ -17,7 +17,7 @@ class ExhibSpider(scrapy.Spider):
 
         exhib_items_tags=response.xpath('//td[@class ="cspacer ca3"]/table/tr/td[1]/a').extract()
 
-        next_page = response.xpath('//div[@class="pagination xhidden-xs"]/div[@class="nomobile"]/a[last()]/@href').extract_first()
+        next_page = response.xpath('//div[@class="pagination xhidden-xs"]/div[@class="notmobile"]/a[last()]/@href').extract_first()
         if next_page is not None:
             yield response.follow(next_page, callback=self.parse)
         
