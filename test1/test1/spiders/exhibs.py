@@ -1,8 +1,11 @@
 import scrapy
-from HTMLParser import HTMLParser
 import uuid
 import urllib
 import io
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import DNSLookupError
+from twisted.internet.error import TimeoutError, TCPTimedOutError
+from HTMLParser import HTMLParser
 
 class ExhibSpider(scrapy.Spider):
     name="exhibs"
