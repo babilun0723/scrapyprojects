@@ -33,7 +33,7 @@ class ExhibSpider(scrapy.Spider):
             href = self.h.unescape(href)
             href = '%s%s' % (self.rooturl, href)
 
-            request = scrapy.Request(href, callback=self.parse_exhibitor)
+            request = scrapy.Request(href, callback=self.parse_exhibitor, errback = self.errback_httpbin)
             request.meta["title"] = title
             yield request
 
@@ -46,8 +46,28 @@ class ExhibSpider(scrapy.Spider):
         if len(str(html)) > 4:
             with io.open(filename, 'wb') as f:
                 f.write(str(html))
-                self.log('Saved file %s' % filename)
+                self.logger('Saved file %s' % filename)
         else:
-            self.log('Nothing is captured in %s' % response.url)
+            self.logger('Nothing is captured in %s' % response.url)
 
-        
+    def errback_httpbin(self, failure):
+        # log all failures
+        self.logger.error(repr(failure))
+
+        # in case you want to do something special for some errors,
+        # you may need the failure's type:
+
+        if failure.check(HttpError):
+            # these exceptions come from HttpError spider middleware
+            # you can get the non-200 response
+            response = failure.value.response
+            self.logger.error('HttpError on %s', response.url)
+
+        elif failure.check(DNSLookupError):
+            # this is the original request
+            request = failure.request
+            self.logger.error('DNSLookupError on %s', request.url)
+
+        elif failure.check(TimeoutError, TCPTimedOutError):
+            request = failure.request
+            self.logger.error('TimeoutError on %s', request.url) 
