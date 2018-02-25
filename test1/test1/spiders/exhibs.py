@@ -49,9 +49,9 @@ class ExhibSpider(scrapy.Spider):
         if len(str(html)) > 4:
             with io.open(filename, 'wb') as f:
                 f.write(str(html))
-                self.logger('Saved file %s', filename)
+                self.log('Saved file %s' % filename)
         else:
-            self.logger('Nothing is captured in %s', response.url)
+            self.log('Nothing is captured in %s' % response.url)
 
     def errback_httpbin(self, failure):
         # log all failures
