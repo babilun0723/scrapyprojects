@@ -4,7 +4,6 @@ import uuid
 import urllib
 import io
 
-
 class ExhibSpider(scrapy.Spider):
     name="exhibs"
     rooturl='http://www.eisenwarenmesse.com'
@@ -42,7 +41,7 @@ class ExhibSpider(scrapy.Spider):
         title = response.meta["title"]
         filename = 'htmlpages/%s.html' % title.replace("/"," ")
 
-        html = response.xpath('//div[@class="maincontent"][1]').extract_first()
+        html = response.xpath('//div[@class="maincontent"]').extract_first()
         
         with io.open(filename, 'wb') as f:
             f.write(str(html))
