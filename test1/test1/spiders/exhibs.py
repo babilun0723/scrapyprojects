@@ -43,6 +43,11 @@ class ExhibSpider(scrapy.Spider):
 
         html = response.xpath('//div[@class="maincontent"]').extract_first()
         
-        with io.open(filename, 'wb') as f:
+        if len(str(html)) > 4:
+            with io.open(filename, 'wb') as f:
             f.write(str(html))
             self.log('Saved file %s' % filename)
+        else:
+            self.log('Nothing is captured in %s' % response.url)
+
+        
