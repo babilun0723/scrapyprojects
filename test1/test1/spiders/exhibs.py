@@ -51,7 +51,10 @@ class ExhibSpider(scrapy.Spider):
                 f.write(str(html))
                 self.log('Saved file %s' % filename)
         else:
+            filename = '%s.failed'% filename
             self.log('Nothing is captured in %s' % response.url)
+            with io.open(filename, 'wb') as f:
+                f.write(response.body)
 
     def errback_httpbin(self, failure):
         # log all failures
