@@ -53,7 +53,7 @@ class ExhibSpider(scrapy.Spider):
         else:
             self.log('Nothing is captured in %s' % response.url)
             self.log('Trying to recrawl %s' % response.url)
-            request = scrapy.Request(href, callback=self.parse_exhibitor, errback = self.errback_httpbin)
+            request = scrapy.Request(response.url, callback=self.parse_exhibitor, errback = self.errback_httpbin)
             request.meta["title"] = title
             yield request
 
