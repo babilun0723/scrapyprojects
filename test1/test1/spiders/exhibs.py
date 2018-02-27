@@ -51,10 +51,11 @@ class ExhibSpider(scrapy.Spider):
                 f.write(str(html))
                 self.log('Saved file %s' % filename)
         else:
-            filename = '%s.failed'% filename
             self.log('Nothing is captured in %s' % response.url)
-            with io.open(filename, 'wb') as f:
-                f.write(response.body)
+            self.log('Trying to recrawl %s' % response.url)
+            request = scrapy.Request(href, callback=self.parse_exhibitor, errback = self.errback_httpbin)
+            request.meta["title"] = title
+            yield request
 
     def errback_httpbin(self, failure):
         # log all failures
