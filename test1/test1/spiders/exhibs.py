@@ -4,29 +4,30 @@ import urllib
 import io
 import logging
 import unicodedata
+from scrapy.crawler import CrawlerProcess
 from scrapy.spidermiddlewares.httperror import HttpError
 from twisted.internet.error import DNSLookupError
 from twisted.internet.error import TimeoutError, TCPTimedOutError
 from HTMLParser import HTMLParser
 from scrapy.utils.log import configure_logging
-
+from test1.items import ExhibitorItem
 
 class ExhibSpider(scrapy.Spider):
     name="exhibs"
     rooturl='http://www.eisenwarenmesse.com'
 
     custom_settings = {
-        'CONCURRENT_REQUESTS': '100',
+        'CONCURRENT_REQUESTS': '40',
     }
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
+    # logger = logging.getLogger(__name__)
+    # logger.setLevel(logging.INFO)
 
-    formatter = logging.Formatter('%(message)s')
-    file_handler = logging.FileHandler('exhibs.log')
-    file_handler.setFormatter(formatter)
+    # formatter = logging.Formatter('%(message)s')
+    # file_handler = logging.FileHandler('exhibs.log')
+    # file_handler.setFormatter(formatter)
     
-    logger.addHandler(file_handler)
+    # logger.addHandler(file_handler)
     
      
     h = HTMLParser()
@@ -57,10 +58,6 @@ class ExhibSpider(scrapy.Spider):
 
             nTitle = (unicodedata.normalize('NFKD', uTitle).encode('ascii','ignore')).strip()
             
-            self.logger.info('%s  %s', nTitle, nUrl )
-
-            
-
             # href = a.split('"')[1]
             # title = (a.split('>')[1]).split('<')[0]
 
@@ -73,6 +70,7 @@ class ExhibSpider(scrapy.Spider):
             # href = self.h.unescape(href)
             # href = '%s%s' % (self.rooturl, href)
             # self.logger.info('%s %s', title, href )
+
             request = scrapy.Request(nUrl, callback=self.parse_exhibitor, errback = self.errback_httpbin)
             request.meta["title"] = nTitle
             yield request
@@ -81,12 +79,13 @@ class ExhibSpider(scrapy.Spider):
         title = response.meta["title"]
         filename = 'htmlpages/%s.html' % title.replace("/"," ")
 
-        html = response.xpath('//div[@class="platzFuerCross"]').extract_first()
-        
+        html = response.xpath('//div[@class="maincontent"]').extract_first()
+
         if len(str(html)) > 4:
-            with io.open(filename, 'wb') as f:
-                f.write(str(html))
-                self.logger.info('Saved file %s', filename)
+            exhibitor = ExhibitorItem()
+            exhibitor['title'] = title
+            exhibitor['html_detail'] = html
+            yield exhibitor
         else:
             request = scrapy.Request(response.url, callback=self.parse_exhibitor, errback = self.errback_httpbin)
             request.meta["title"] = title
@@ -113,3 +112,5 @@ class ExhibSpider(scrapy.Spider):
         elif failure.check(TimeoutError, TCPTimedOutError):
             request = failure.request
             self.logger.error('TimeoutError on %s', request.url) 
+
+

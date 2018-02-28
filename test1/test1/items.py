@@ -7,8 +7,7 @@
 
 import scrapy
 
-
-class Test1Item(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class ExhibitorItem(scrapy.Item):
+    title = scrapy.Field()
+    html_detail = scrapy.Field()
+    last_updated = scrapy.Field(serializer=str)
