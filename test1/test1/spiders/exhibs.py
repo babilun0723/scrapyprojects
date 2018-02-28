@@ -17,7 +17,7 @@ class ExhibSpider(scrapy.Spider):
     rooturl='http://www.eisenwarenmesse.com'
 
     custom_settings = {
-        'CONCURRENT_REQUESTS': '40',
+        'CONCURRENT_REQUESTS': '10',
     }
 
     # logger = logging.getLogger(__name__)
@@ -77,13 +77,12 @@ class ExhibSpider(scrapy.Spider):
             
     def parse_exhibitor(self, response):
         title = response.meta["title"]
-        filename = 'htmlpages/%s.html' % title.replace("/"," ")
 
         html = response.xpath('//div[@class="maincontent"]').extract_first()
 
         if len(str(html)) > 4:
             exhibitor = ExhibitorItem()
-            exhibitor['title'] = title
+            exhibitor['title'] = title.replace("/"," ")
             exhibitor['html_detail'] = html
             yield exhibitor
         else:
