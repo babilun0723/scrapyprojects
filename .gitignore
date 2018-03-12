@@ -1,4 +1,9 @@
 */*.pdf
 */*.txt
 */*.html
+*/*.log
+*/test1/nohup.out
+*/htmlpages.*
+*/htmlpages_*
+*/nohup*
 .vscode

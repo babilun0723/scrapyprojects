@@ -17,7 +17,7 @@ class ExhibSpider(scrapy.Spider):
     rooturl='http://www.eisenwarenmesse.com'
 
     custom_settings = {
-        'CONCURRENT_REQUESTS': '10',
+        'CONCURRENT_REQUESTS': '5',
     }
 
     # logger = logging.getLogger(__name__)
